@@ -3,6 +3,7 @@
 # Importando as bibliotecas necessárias.
 import pygame
 from os import path
+import random
 
 # Estabelece a pasta que contem as figuras.
 img_dir = path.join(path.dirname(__file__), 'img')
@@ -22,12 +23,12 @@ YELLOW = (255, 255, 0)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
-        pygame.prite.Sprite.__init__(self)
-        player_img = pygame.image.load(path.join(img_dir, "playerShip1_orange.png"))
+        pygame.sprite.Sprite.__init__(self)
+        player_img = pygame.image.load(path.join(img_dir, "playerShip1_orange.png")).convert()
         self.image = player_img
         
         self_image = pygame.transform.scale(player_img, (50,38))
-        self_image.set.colorkey(BLACK)
+        self_image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         
         self.rect.centerx =  WIDTH/2
@@ -42,6 +43,24 @@ class Player(pygame.sprite.Sprite):
             self.rect.right = WIDTH
         if self.rect.left < 0:
             self.rect.left = 0
+            
+class Mob(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        player_img = pygame.image.load(path.join(img_dir, "MobShip_black.png")).convert()
+        self.image = player_img
+        
+        self_image = pygame.transform.scale(player_img, (36,18))
+        self_image.set_colorkey(WHITE)
+        self.rect = self.image.get_rect()
+        
+    
+        self.rect.centerx = random.randrange(0, WIDTH)
+        self.rect.bottom = random.randrange(-100,-40)
+    
+        self.rect.speedx= random.randrange(-3,3)
+        self.rect.speedy= random.randrange(2,9)
+    
         
 
 # Inicialização do Pygame.
@@ -52,7 +71,7 @@ pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 # Nome do jogo
-pygame.display.set_caption("Asteroids")
+pygame.display.set_caption("Navinha")
 
 # Variável para o ajuste de velocidade
 clock = pygame.time.Clock()
@@ -66,9 +85,11 @@ background_rect = background.get_rect()
 
 background_rect = background.get_rect()
 player= Player()
+mob= Mob()
 
 all_sprites = pygame.sprite.Group()
-all_sprites.add(Player)
+all_sprites.add(player)
+all_sprites.add(mob)*8
 
 try:
     
@@ -101,7 +122,7 @@ try:
                 if event.key == pygame.K_RIGHT:
                     player.speedx = 0
     
-        all_sprites.uptade()
+        all_sprites.update()
         # A cada loop, redesenha o fundo e os sprites
         screen.fill(BLACK)
         screen.blit(background, background_rect)
