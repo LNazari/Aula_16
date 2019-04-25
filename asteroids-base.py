@@ -4,9 +4,11 @@
 import pygame
 from os import path
 import random
+import time
 
 # Estabelece a pasta que contem as figuras.
 img_dir = path.join(path.dirname(__file__), 'img')
+snd_dir= path.join(path.dirname(__file__), 'snd')
 
 # Dados gerais do jogo.
 WIDTH = 480 # Largura da tela
@@ -35,6 +37,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom = HEIGHT -10
         
         self.speedx = 0
+        self.radius = 25
         
     def update(self):
         self.rect.x += self.speedx
@@ -47,7 +50,7 @@ class Player(pygame.sprite.Sprite):
 class Mob(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        player_img = pygame.image.load(path.join(img_dir, "MobShip_black.png")).convert()
+        player_img = pygame.image.load(path.join(img_dir, "playerShip1_orange.png")).convert()
         self.image = player_img
         
         self_image = pygame.transform.scale(player_img, (36,18))
@@ -60,7 +63,17 @@ class Mob(pygame.sprite.Sprite):
     
         self.rect.speedx= random.randrange(-3,3)
         self.rect.speedy= random.randrange(2,9)
-    
+        
+        self.radius = int(self.rect.width * .85/2)
+        
+    def update(self): 
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+        if self.rect.right > WIDTH:
+            self.rect.right = WIDTH
+        if self.rect.left < 0:
+            self.rect.left = 0
+       
         
 
 # Inicialização do Pygame.
@@ -80,10 +93,14 @@ clock = pygame.time.Clock()
 background = pygame.image.load(path.join(img_dir, 'starfield.png')).convert()
 background_rect = background.get_rect()
 
-
 # Comando para evitar travamentos.
-
 background_rect = background.get_rect()
+
+pygame.mixer.music.load(path.join(snd_dir, "tgfcoder-FrozenJam-SeamlessLoop.ogg"))
+pygame.mixer.music.set_volume(0.4)
+boom_sound = pygame.mixer.Sound(path.join(snd_dir, "expl3.wav"))
+
+
 player= Player()
 mob= Mob()
 
@@ -94,6 +111,7 @@ all_sprites.add(mob)*8
 try:
     
     # Loop principal.
+    pygame.mixer.music.play(loops=-1)
     running = True
     while running:
         
@@ -123,6 +141,14 @@ try:
                     player.speedx = 0
     
         all_sprites.update()
+        
+        hits= pygame.sprite.spriltecollide(player,mob,False, pygame.sprite.collide_circle)
+        if hits:
+            boom_sound.play()
+            time.sleep(1)
+            running= False
+        
+        
         # A cada loop, redesenha o fundo e os sprites
         screen.fill(BLACK)
         screen.blit(background, background_rect)
