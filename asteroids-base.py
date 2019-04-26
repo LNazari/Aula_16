@@ -45,15 +45,15 @@ class Player(pygame.sprite.Sprite):
         if self.rect.right > WIDTH:
             self.rect.right = WIDTH
         if self.rect.left < 0:
-            self.rect.left = 0
-            
+            self.rect.left = 0  
+   
 class Mob(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        player_img = pygame.image.load(path.join(img_dir, "playerShip1_orange.png")).convert()
-        self.image = player_img
+        mob_img = pygame.image.load(path.join(img_dir, "playerShip1_orange.png")).convert()
+        self.image = mob_img
         
-        self_image = pygame.transform.scale(player_img, (36,18))
+        self_image = pygame.transform.scale(mob_img, (36,18))
         self_image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
         
@@ -73,6 +73,28 @@ class Mob(pygame.sprite.Sprite):
             self.rect.right = WIDTH
         if self.rect.left < 0:
             self.rect.left = 0
+            
+class Bullets(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        bullet_img = pygame.image.load(path.join(img_dir, "laserRed16.png ")).convert()
+        self.image = bullet_img
+        
+        
+        self_image = pygame.transform.scale(bullet_img, (15,8))
+        self_image.set_colorkey(RED)
+        self.rect = self.image.get_rect()
+        
+        
+        
+        self.rect.speedy= -10
+        
+        def update(self):
+            if self.rect.space:
+                self.rect.centerx = Player[self.rect.centerx]
+            
+            if self.image== Mob[self.rect.centerx and Mob[self.rect.bottom]:
+                hits= True
        
         
 
@@ -103,10 +125,13 @@ boom_sound = pygame.mixer.Sound(path.join(snd_dir, "expl3.wav"))
 
 player= Player()
 mob= Mob()
+bullets= Bullets()
 
 all_sprites = pygame.sprite.Group()
 all_sprites.add(player)
 all_sprites.add(mob)*8
+all_sprites.add(bullets)
+
 
 try:
     
